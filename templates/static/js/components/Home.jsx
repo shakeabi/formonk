@@ -10,6 +10,14 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 export default class Home extends Component {
+  constructor() {
+    super();
+  }
+
+  changeRoute = (path) => {
+    this.props.history.push(path);
+  }
+
   render() {
     const bull = <span className="bullet">•</span>;
     return (
@@ -32,8 +40,11 @@ export default class Home extends Component {
             </Typography>
           </CardContent>
           <CardActions className="_card_buttonContainer">
-            <Button size="Large" renderAs={Link} className="_card_buttonContainer_button">
-              <Link to="/user">Create Form</Link>
+            <Button
+              className="_card_buttonContainer_button"
+              onClick={()=>{this.changeRoute('/create')}}
+            >
+              Create Form
             </Button>
           </CardActions>
         </Card>

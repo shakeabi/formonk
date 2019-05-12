@@ -46,6 +46,13 @@ export default class Home extends Component {
             >
               Create Form
             </Button>
+
+            <Button
+              className="_card_buttonContainer_button"
+              onClick={()=>{this.changeRoute('/explore')}}
+            >
+              Explore
+            </Button>
           </CardActions>
         </Card>
       </div>

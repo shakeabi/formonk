@@ -21,6 +21,8 @@ def create_form():
     timestampStr = curr_dt.strftime("%d%b%Y%H%M%S%f")
     data['slug'] = slugify(data['title']+timestampStr)
     data['url'] = ('http://localhost:5000/form/'+data['slug'])
+    data['resUrl'] = ('http://localhost:5000/responses/'+data['slug'])
+    data['responses'] = []
     form = mongo.db.forms
     form.insert(data)
     sendData=data
@@ -40,14 +42,55 @@ def get_form():
       f={'error':True}
     return jsonify({'formData':f})
 
+@api_bp.route('/api/getExplore', methods=['POST'])
+def explore():
+    # try:
+      forms = mongo.db.forms.find({})
+      returnData = []
+      for f in forms:
+        temp = {
+          'title':f['title'],
+          'link':f['url'],
+          'responses':f['resUrl'],
+          'slug':f['slug']
+        }
+        returnData.append(temp)
+      print(returnData)
+      return jsonify({'data':returnData,'error':False})
+    # except:
+    #   return jsonify({'error':True})
+    
+
 @api_bp.route('/api/submitResponse', methods=['POST'])
 def submit_response(): 
     formRes = request.json
-    responses = mongo.db.responses
-    responses.insert(formRes)
+    forms = mongo.db.forms
+    f = forms.find_one({'slug':formRes['formSlug']})
+
+    if f:
+      responses = f['responses']
+    else:
+      return jsonify({'status':'Submission Failed!'})
+    
+    responses.append(formRes['formData'])
+    f['responses'] = responses
+
+    forms.find_one_and_update({'slug':formRes['formSlug']},{'$set':f},upsert=False)
 
     return jsonify({'status':'success'})
 
+@api_bp.route('/api/getResponses', methods=['POST'])
+def get_response():
+  formId = request.json['formId']
+  forms = mongo.db.forms
+  f = forms.find_one({'slug':formId})
+
+  if f:
+    f.pop('_id',None)
+    f['error']=False
+  else:
+    f={'error':True}
+  return jsonify({'formData':f})
 
 @api_bp.route('/')
 def home():

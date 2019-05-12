@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import '../../../public/css/viewForm.scss';
+import '../../../public/css/submitForm.scss';
 import axios from 'axios';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -45,11 +45,15 @@ class SubmitForm extends Component {
         formId: this.props.match.params.formId
       })
       .then(res => {
-        this.setState({ formSkele: res.data.formData });
-        console.log('formSkele', this.state.formSkele);
+        if(!res.data.formData.error)
+          this.setState({ formSkele: res.data.formData });
+        else{
+          alert("Failed to find the given form! Check the URL!");
+          this.props.history.push('/');
+        }
       })
       .catch(err => {
-        alert(err);
+        console.log(err);
       });
   }
 
@@ -108,8 +112,8 @@ class SubmitForm extends Component {
     const { classes } = this.props;
 
     return (
-      <div className="_container">
-        <Paper className="_container_main_paper" elevation={1}>
+      <div className="_submitForm_container">
+        <Paper className="_submitForm_container_main_paper" elevation={1}>
           {this.state.validationDone && !this.state.validationStatus ? (
             <Chip
               label="Validation Failed: Please Fill all the Fields"

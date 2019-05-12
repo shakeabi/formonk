@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import axios from 'axios';
 import '../../../public/css/createForm.scss';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -55,10 +56,18 @@ class CreateForm extends Component {
     validationStatus: false
   };
 
-
   saveForm = () => {
-    
-  }
+    console.log('posted!');
+    let postData = { data: this.state.formState };
+    axios
+      .post('http://localhost:5000/api/createForm', postData)
+      .then(res => {
+        console.log(res);
+        alert(`Form Submitted Succesfully!\nLink:\n${res.data}`);
+        this.props.history.push('/');
+      })
+      .catch(err => console.log(err));
+  };
 
   handleClickListItem = event => {
     this.setState({ anchorEl: event.currentTarget });
@@ -77,7 +86,7 @@ class CreateForm extends Component {
     const tempInputState = {
       type: options[oldState.selectedIndex],
       name: '',
-      options: oldState.selectedIndex==2?['', '']:null
+      options: oldState.selectedIndex == 2 ? ['', ''] : null
     };
     oldState.formState.fields.push(tempInputState);
 
@@ -101,13 +110,13 @@ class CreateForm extends Component {
     this.setState(oldState);
   };
 
-  deleteOptionField = (subidx,idx) => {
+  deleteOptionField = (subidx, idx) => {
     let oldState = this.state;
     let inputFields = oldState.formState.fields;
-    inputFields[idx].options.splice(subidx,1);
+    inputFields[idx].options.splice(subidx, 1);
     oldState.formState.fields = inputFields;
     this.setState(oldState);
-  }
+  };
 
   updateHeader = (val, type) => {
     let oldState = this.state;
@@ -122,7 +131,7 @@ class CreateForm extends Component {
     inputFields[idx].name = val;
     oldState.formState.fields = inputFields;
     this.setState(oldState);
-  }
+  };
 
   updateOptionField = (val, subidx, idx) => {
     let oldState = this.state;
@@ -130,37 +139,43 @@ class CreateForm extends Component {
     inputFields[idx].options[subidx] = val;
     oldState.formState.fields = inputFields;
     this.setState(oldState);
-  }
+  };
 
   validateAndSave = () => {
-    this.setState({validationDone:true});
+    this.setState({ validationDone: true });
     let formState = this.state.formState;
     let validationStatus = true;
     // Validations
-    if(validationStatus && (formState.title==null || formState.title.length==0))
+    if (
+      validationStatus &&
+      (formState.title == null || formState.title.length == 0)
+    )
       validationStatus = false;
-    if(validationStatus && (formState.desc==null || formState.desc.length==0))
+    if (
+      validationStatus &&
+      (formState.desc == null || formState.desc.length == 0)
+    )
       validationStatus = false;
-    if(validationStatus){
-      formState.fields.forEach((ele)=>{
+    if (validationStatus) {
+      formState.fields.forEach(ele => {
         console.log(ele);
-        if(ele.name==null || ele.name.length==0){
+        if (ele.name == null || ele.name.length == 0) {
           console.log('heloo');
           validationStatus = false;
         }
-        if(validationStatus && ele.type=='Radio Input')
-          ele.options.forEach(item=>{
-            if(item.length==0)
-              validationStatus = false;
+        if (validationStatus && ele.type == 'Radio Input')
+          ele.options.forEach(item => {
+            if (item.length == 0) validationStatus = false;
           });
       });
     }
-    this.setState({validationStatus:validationStatus});
 
-    if(this.state.validationDone && this.state.validationStatus)
+    this.setState({ validationStatus: validationStatus });
+
+    if (this.state.validationDone && this.state.validationStatus) {
       this.saveForm();
-
-  }
+    }
+  };
 
   render() {
     const { classes } = this.props;
@@ -177,8 +192,22 @@ class CreateForm extends Component {
             <Typography variant="h6" color="inherit" className={classes.grow}>
               INSERT
             </Typography>
-            {(this.state.validationDone && !this.state.validationStatus)?<Chip label="Validation Failed: Please Fill all the Fields" color="secondary" className={classes.chip} />:(this.state.validationDone && this.state.validationStatus)?<Chip label="Validation Success" color="primary" className={classes.chip} />:<Fragment/>}
-            
+            {this.state.validationDone && !this.state.validationStatus ? (
+              <Chip
+                label="Validation Failed: Please Fill all the Fields"
+                color="secondary"
+                className={classes.chip}
+              />
+            ) : this.state.validationDone && this.state.validationStatus ? (
+              <Chip
+                label="Validation Success"
+                color="primary"
+                className={classes.chip}
+              />
+            ) : (
+              <Fragment />
+            )}
+
             {/* Right Side */}
             <List component="nav" color="inherit">
               <ListItem
@@ -333,7 +362,7 @@ class CreateForm extends Component {
                             }}
                           />
                           <TextField
-                            label={`option${subidx+1}`}
+                            label={`option${subidx + 1}`}
                             value={option}
                             className={classNames(
                               classes.textField,
@@ -346,7 +375,11 @@ class CreateForm extends Component {
                               width: '60%'
                             }}
                             onChange={eve => {
-                              this.updateOptionField(eve.target.value, subidx, idx);
+                              this.updateOptionField(
+                                eve.target.value,
+                                subidx,
+                                idx
+                              );
                             }}
                           />
                           <IconButton
@@ -354,9 +387,9 @@ class CreateForm extends Component {
                             aria-label="Delete"
                             style={{ position: 'relative', top: '15px' }}
                             onClick={() => {
-                              this.deleteOptionField(subidx,idx);
+                              this.deleteOptionField(subidx, idx);
                             }}
-                            disabled={ele.options.length<=2}
+                            disabled={ele.options.length <= 2}
                           >
                             <DeleteIcon />
                           </IconButton>
@@ -373,7 +406,7 @@ class CreateForm extends Component {
             variant="contained"
             color="primary"
             className={classes.button}
-            onClick={()=>{
+            onClick={() => {
               this.validateAndSave();
             }}
           >

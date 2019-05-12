@@ -1,3 +1,5 @@
 __pycache__/*
 */__pycache__/*
 templates/static/node_modules/*
+dbconfig.py
+templates/public/bundle.js

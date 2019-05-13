@@ -100,11 +100,12 @@ class SubmitForm extends Component {
       });
     }
 
-    this.setState({validationStatus:validationStatus});
-
-    if(this.state.validationDone && this.state.validationStatus){
-      this.submit();
-    }
+    this.setState({ validationStatus: validationStatus },()=>{
+      console.log('temp',this.state.validationDone,this.state.validationStatus);
+      if (this.state.validationDone && this.state.validationStatus) {
+        this.submit();
+      }
+    });
 
   };
 

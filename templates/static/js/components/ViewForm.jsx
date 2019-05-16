@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import '../../../public/css/viewForm.scss';
+import conf from '../../config';
 
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -49,7 +50,7 @@ class ViewForm extends Component {
 
   componentDidMount() {
     axios
-      .post('http://localhost:5000/api/getResponses', {
+      .post(conf.url+'api/getResponses', {
         formId: this.props.match.params.formId
       })
       .then(res => {

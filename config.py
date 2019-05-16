@@ -17,3 +17,6 @@ class DevelopmentConfig(BaseConfig):
   '''
   DEBUG=True
   TESTING=True
+
+class Setup(object):
+  url='http://localhost:5000/'

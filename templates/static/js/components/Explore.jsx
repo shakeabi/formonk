@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import '../../../public/css/explore.scss';
+import conf from '../../config';
 
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -53,7 +54,7 @@ class Explore extends Component {
 
   componentDidMount() {
     axios
-      .post('http://localhost:5000/api/getExplore')
+      .post(conf.url+'api/getExplore')
       .then(res => {
         console.log(res.data);
         if (!res.data.error) {

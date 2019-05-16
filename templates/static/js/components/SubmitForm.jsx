@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import '../../../public/css/submitForm.scss';
 import axios from 'axios';
+import conf from '../../config'
 
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -41,7 +42,7 @@ class SubmitForm extends Component {
 
   componentDidMount() {
     axios
-      .post('http://localhost:5000/api/getForm', {
+      .post(conf.url+'api/getForm', {
         formId: this.props.match.params.formId
       })
       .then(res => {
@@ -60,7 +61,7 @@ class SubmitForm extends Component {
   submit = ()=>{
     console.log('Submitting');
     axios
-      .post('http://localhost:5000/api/submitResponse', {
+      .post(conf.url+'api/submitResponse', {
         formData: this.state.formData,
         formSlug: this.state.formSkele.slug
       })

@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import '../../../public/css/createForm.scss';
+import conf from '../../config';
 
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -60,7 +61,7 @@ class CreateForm extends Component {
     console.log('posted!');
     let postData = { data: this.state.formState };
     axios
-      .post('http://localhost:5000/api/createForm', postData)
+      .post(conf.url+'api/createForm', postData)
       .then(res => {
         console.log(res);
         alert(`Form Submitted Succesfully!\nLink:\n${res.data}`);

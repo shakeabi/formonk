@@ -2,6 +2,7 @@ from flask import render_template,Blueprint,jsonify,request
 import json
 import datetime
 from slugify import slugify
+from config import Setup
 from templates import mongo
 
 api_bp = Blueprint('api',__name__)
@@ -20,8 +21,8 @@ def create_form():
     curr_dt = datetime.datetime.now()
     timestampStr = curr_dt.strftime("%d%b%Y%H%M%S%f")
     data['slug'] = slugify(data['title']+timestampStr)
-    data['url'] = ('http://localhost:5000/form/'+data['slug'])
-    data['resUrl'] = ('http://localhost:5000/responses/'+data['slug'])
+    data['url'] = (Setup.url+'form/'+data['slug'])
+    data['resUrl'] = (Setup.url+'responses/'+data['slug'])
     data['responses'] = []
     form = mongo.db.forms
     form.insert(data)

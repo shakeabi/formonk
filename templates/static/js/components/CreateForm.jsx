@@ -28,6 +28,7 @@ import TextField from '@material-ui/core/TextField';
 import Chip from '@material-ui/core/Chip';
 
 import FiberManualRecordOutlinedIcon from '@material-ui/icons/FiberManualRecordOutlined';
+import CheckBoxOutlineBlankOutlinedIcon from '@material-ui/icons/CheckBoxOutlineBlankOutlined';
 
 const styles = {
   grow: {
@@ -38,7 +39,7 @@ const styles = {
   }
 };
 
-const options = ['Select Input Type', 'Text Input', 'Radio Input'];
+const options = ['Select Input Type', 'Text Input', 'Radio Input', 'Checkbox Input'];
 
 class CreateForm extends Component {
   constructor() {
@@ -87,7 +88,7 @@ class CreateForm extends Component {
     const tempInputState = {
       type: options[oldState.selectedIndex],
       name: '',
-      options: oldState.selectedIndex == 2 ? ['', ''] : null
+      options: ((oldState.selectedIndex == 2)||(oldState.selectedIndex == 3)) ? ['', ''] : null // if radio or checkbox
     };
     oldState.formState.fields.push(tempInputState);
 
@@ -373,7 +374,92 @@ class CreateForm extends Component {
                             margin="dense"
                             style={{
                               marginBottom: '20px',
-                              marginLeft: '6%',
+                              marginLeft: '8%',
+                              width: '60%'
+                            }}
+                            onChange={eve => {
+                              this.updateOptionField(
+                                eve.target.value,
+                                subidx,
+                                idx
+                              );
+                            }}
+                          />
+                          <IconButton
+                            className={classes.button}
+                            aria-label="Delete"
+                            style={{ position: 'relative', top: '15px' }}
+                            onClick={() => {
+                              this.deleteOptionField(subidx, idx);
+                            }}
+                            disabled={ele.options.length <= 2}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                          <br />
+                        </Fragment>
+                      );
+                    })}
+                  </Fragment>
+                );
+              }
+              if (ele.type == 'Checkbox Input') {
+                return (
+                  <Fragment key={idx}>
+                    <TextField
+                      label={`Question ${idx} - ${ele.type}`}
+                      value={ele.name}
+                      className={classNames(classes.textField, classes.dense)}
+                      margin="dense"
+                      style={{ marginBottom: '20px', width: '70%' }}
+                      onChange={eve => {
+                        this.updateInputField(eve.target.value, idx);
+                      }}
+                    />
+                    <IconButton
+                      className={classes.button}
+                      aria-label="Delete"
+                      style={{ position: 'relative', top: '15px' }}
+                      onClick={() => {
+                        this.deleteInputField(idx);
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                    <IconButton
+                      color="default"
+                      aria-label="Add Checkbox Options"
+                      size="small"
+                      className={classes.fab}
+                      style={{ position: 'relative', top: '15px' }}
+                      onClick={() => {
+                        this.handleAddOptionBtn(idx);
+                      }}
+                    >
+                      <AddIcon />
+                    </IconButton>
+                    <br />
+                    {ele.options.map((option, subidx) => {
+                      return (
+                        <Fragment key={subidx}>
+                          <CheckBoxOutlineBlankOutlinedIcon
+                            style={{
+                              position: 'relative',
+                              top: '20px',
+                              left: '30px'
+                            }}
+                          />
+                          <TextField
+                            label={`option${subidx + 1}`}
+                            value={option}
+                            className={classNames(
+                              classes.textField,
+                              classes.dense
+                            )}
+                            margin="dense"
+                            style={{
+                              marginBottom: '20px',
+                              marginLeft: '8%',
                               width: '60%'
                             }}
                             onChange={eve => {

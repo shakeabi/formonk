@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import '../../../public/css/submitForm.scss';
 import axios from 'axios';
-import conf from '../../config'
+import conf from '../../config';
 
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -19,6 +19,8 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import Checkbox from '@material-ui/core/Checkbox';
 
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
@@ -42,14 +44,14 @@ class SubmitForm extends Component {
 
   componentDidMount() {
     axios
-      .post(conf.url+'api/getForm', {
+      .post(conf.url + 'api/getForm', {
         formId: this.props.match.params.formId
       })
       .then(res => {
-        if(!res.data.formData.error)
+        if (!res.data.formData.error)
           this.setState({ formSkele: res.data.formData });
-        else{
-          alert("Failed to find the given form! Check the URL!");
+        else {
+          alert('Failed to find the given form! Check the URL!');
           this.props.history.push('/');
         }
       })
@@ -58,21 +60,21 @@ class SubmitForm extends Component {
       });
   }
 
-  submit = ()=>{
+  submit = () => {
     console.log('Submitting');
     axios
-      .post(conf.url+'api/submitResponse', {
+      .post(conf.url + 'api/submitResponse', {
         formData: this.state.formData,
         formSlug: this.state.formSkele.slug
       })
       .then(res => {
-        alert("Form Successfully Submitted!");
+        alert('Form Successfully Submitted!');
         this.props.history.push('/');
       })
       .catch(err => {
         alert('Error Ocurred');
       });
-  }
+  };
 
   handleTextInputChange = (val, idx) => {
     let formData = this.state.formData;
@@ -83,31 +85,55 @@ class SubmitForm extends Component {
   handleRadioInputChange = (val, idx) => {
     let formData = this.state.formData;
     formData[idx] = this.state.formSkele.fields[idx].options[val];
-    console.log(this.state.formData);
     this.setState({ formData: formData });
   };
+
+  handleCheckBoxInputChange = (val ,idx) => {
+    let formData = this.state.formData;
+    if(typeof formData[idx] == 'undefined') formData[idx]={};
+    formData[idx][this.state.formSkele.fields[idx].options[val]]=(!(this.state.formSkele.fields[idx].options[val] in formData[idx])||formData[idx][this.state.formSkele.fields[idx].options[val]]==false)?true:false;
+    this.setState({ formData: formData });
+  }
 
   validateAndSubmit = () => {
     this.setState({ validationDone: true });
     let validationStatus = true;
     let currState = this.state;
-    if(currState.formData.length != currState.formSkele.fields.length){
-      validationStatus=false;
+    if (currState.formData.length != currState.formSkele.fields.length) {
+      validationStatus = false;
     }
-    if(validationStatus){
-      currState.formData.forEach(ele=>{
-        if(validationStatus&&ele.length<=0)
-          validationStatus=false;
+    
+    // Checkbox mod
+    let formData = this.state.formData;
+    this.state.formSkele.fields.forEach((ele,idx)=>{
+      if(ele.type=='Checkbox Input'){
+        let cbstr = '';
+        let entries = Object.entries(this.state.formData[idx]);
+        entries.forEach((item,subidx)=>{
+          if(item[1])
+            cbstr=cbstr+item[0]+', ';
+        });
+        formData[idx]=cbstr;
+      }
+    })
+    this.setState({formData:formData});
+
+    if (validationStatus) {
+      currState.formData.forEach(ele => {
+        if (validationStatus && ele.length <= 0) validationStatus = false;
       });
     }
 
-    this.setState({ validationStatus: validationStatus },()=>{
-      console.log('temp',this.state.validationDone,this.state.validationStatus);
+    this.setState({ validationStatus: validationStatus }, () => {
+      console.log(
+        'temp',
+        this.state.validationDone,
+        this.state.validationStatus
+      );
       if (this.state.validationDone && this.state.validationStatus) {
         this.submit();
       }
     });
-
   };
 
   render() {
@@ -157,6 +183,7 @@ class SubmitForm extends Component {
               return (
                 <Fragment key={idx}>
                   <TextField
+                    required
                     id={`${idx}`}
                     label={`${ele.name}`}
                     name={`${idx}`}
@@ -177,6 +204,7 @@ class SubmitForm extends Component {
               return (
                 <Fragment key={idx}>
                   <FormControl
+                    required
                     component="fieldset"
                     className={classes.formControl}
                   >
@@ -200,6 +228,32 @@ class SubmitForm extends Component {
                         );
                       })}
                     </RadioGroup>
+                  </FormControl>
+                  <br />
+                  <br />
+                </Fragment>
+              );
+            }
+            if (ele.type == 'Checkbox Input') {
+              return (
+                <Fragment key={idx}>
+                  <FormControl
+                    required
+                    component="fieldset"
+                    className={classes.formControl}
+                  >
+                    <FormLabel component="legend">{ele.name}</FormLabel>
+                    <FormGroup>
+                      {ele.options.map((item, subidx) => {
+                        return (
+                          <FormControlLabel
+                            key={idx + subidx / 10}
+                            control={<Checkbox onChange={(eve)=>{this.handleCheckBoxInputChange(eve.target.value,idx)}} value={`${subidx}`} />}
+                            label={`${item}`}
+                          />
+                        );
+                      })}
+                    </FormGroup>
                   </FormControl>
                   <br />
                   <br />

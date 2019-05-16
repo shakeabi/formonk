@@ -53,6 +53,7 @@ class Explore extends Component {
   }
 
   componentDidMount() {
+    console.log(conf.url+'api/getExplore');
     axios
       .post(conf.url+'api/getExplore')
       .then(res => {
